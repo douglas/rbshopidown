@@ -8,15 +8,14 @@ class Parser
     end
 
     def handle_multiline(text)
+        # If the input text is a multiline string we
+        # need to add a \n to the end of the text
+
         if @multiline
             "%s\n" % text
         else
             text
         end
-    end
-
-    def html_text(text)
-        text*""
     end
 
     def parse_unordered_items
@@ -47,13 +46,15 @@ class Parser
 
         html.push("</ol>\n")
 
-        # Lets empty the unordered items list
+        # Lets empty the ordered items list
         @ordered_items = []
 
         return html*""
     end
 
     def parse(text)
+        # Parse markdown text into html
+
         lines = text.split(/\n/)
 
         html = []
@@ -107,6 +108,7 @@ class Parser
             html.push(parse_ordered_items())
         end
 
-        parse_styles(html_text(html))
+        # To finish, lets parse the styles =)
+        parse_styles(html*"")
     end
 end
