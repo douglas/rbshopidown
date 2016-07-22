@@ -1,3 +1,6 @@
+.. image:: https://travis-ci.org/douglas/rbshopidown.svg?branch=master
+    :target: https://travis-ci.org/douglas/rbshopidown
+
 ===============================
 shopidown (ruby)
 ===============================
