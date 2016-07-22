@@ -4,252 +4,258 @@ require 'minitest/autorun'
 require "parser"
 
 class TestParser < Minitest::Test
-    def setup
-        @parser = Parser.new
-    end
+  def setup
+    @parser = Parser.new
+  end
 
-    def test_title
-        # Tests that a title parsers to h1 tag
+  def test_title
+    # Tests that a title parsers to h1 tag
 
-        assert_equal "<h1>Title <em>italic</em> <strong>bold</strong></h1>", @parser.parse("# Title *italic* **bold**")
-    end
+    assert_equal "<h1>Title <em>italic</em> <strong>bold</strong></h1>", @parser.parse("# Title *italic* **bold**")
+  end
 
-    def test_invalid_em_title
-        # Tests that a title without two 'em' marks
-        # parsers to h1 tag
-
-        assert_equal "<h1>Title *italic <strong>bold</strong></h1>", @parser.parse("# Title *italic **bold**")
-    end
+  def test_empty_string
+    # Tests that an empty string parses to an empty string
 
-    def test_invalid_strong_title
-        # Tests that a title without two 'strong' marks
-        # parsers to h1 tag
-
-        assert_equal "<h1>Title <em>italic</em> **bold</h1>", @parser.parse("# Title *italic* **bold")
-    end
-
-    def test_subtitle
-        # Tests that a subtitle parsers to h2 tags
-
-        assert_equal "<h2>Subtitle</h2>", @parser.parse("## Subtitle")
-    end
-
-    def test_pseudo_subtitle
-        # Tests that a pseudo subtitle parsers to a paragraph
+    assert_equal "", @parser.parse("")
+  end
 
-        assert_equal "<p>Subtitle## </p>", @parser.parse("Subtitle## ")
-    end
+  def test_invalid_em_title
+    # Tests that a title without two 'em' marks
+    # parsers to h1 tag
 
-    def test_parse_unordered_list
-        # Tests that we can parse an unordered list
+    assert_equal "<h1>Title *italic <strong>bold</strong></h1>", @parser.parse("# Title *italic **bold**")
+  end
 
-        @input_text = <<~text
-        - list item 1
-        - list item 2
-        text
+  def test_invalid_strong_title
+    # Tests that a title without two 'strong' marks
+    # parsers to h1 tag
+
+    assert_equal "<h1>Title <em>italic</em> **bold</h1>", @parser.parse("# Title *italic* **bold")
+  end
+
+  def test_subtitle
+    # Tests that a subtitle parsers to h2 tags
 
-        @output_text = <<~text
-        <ul>
-          <li>list item 1</li>
-          <li>list item 2</li>
-        </ul>
-        text
+    assert_equal "<h2>Subtitle</h2>", @parser.parse("## Subtitle")
+  end
 
-        assert_equal @output_text, @parser.parse(@input_text)
-    end
+  def test_pseudo_subtitle
+    # Tests that a pseudo subtitle parsers to a paragraph
 
-    def test_parse_ordered_list
-        # Tests that we can parse an ordered list
+    assert_equal "<p>Subtitle## </p>", @parser.parse("Subtitle## ")
+  end
 
-        @input_text = <<~text
-        1. ordered item 1
-        2. ordered item 2
-        text
+  def test_parse_unordered_list
+    # Tests that we can parse an unordered list
 
-        @output_text = <<~text
-        <ol>
-          <li>ordered item 1</li>
-          <li>ordered item 2</li>
-        </ol>
-        text
+    @input_text = <<~text
+    - list item 1
+    - list item 2
+    text
 
-        assert_equal @output_text, @parser.parse(@input_text)
-    end
+    @output_text = <<~text
+    <ul>
+      <li>list item 1</li>
+      <li>list item 2</li>
+    </ul>
+    text
 
-    def test_lists
-        # Test that we can parse ul and ol
+    assert_equal @output_text, @parser.parse(@input_text)
+  end
 
-        @input_text = <<~text
-        - list item 1
-        - list item 2
+  def test_parse_ordered_list
+    # Tests that we can parse an ordered list
 
-        1. ordered item 1
-        2. ordered item 2
-        text
+    @input_text = <<~text
+    1. ordered item 1
+    2. ordered item 2
+    text
 
-        @output_text = <<~text
-        <ul>
-          <li>list item 1</li>
-          <li>list item 2</li>
-        </ul>
+    @output_text = <<~text
+    <ol>
+      <li>ordered item 1</li>
+      <li>ordered item 2</li>
+    </ol>
+    text
 
-        <ol>
-          <li>ordered item 1</li>
-          <li>ordered item 2</li>
-        </ol>
-        text
+    assert_equal @output_text, @parser.parse(@input_text)
+  end
 
-        assert_equal @output_text, @parser.parse(@input_text)
-    end
+  def test_lists
+    # Test that we can parse ul and ol
 
-    def test_inverted_lists
-        # Test that we can parse ol and ul
+    @input_text = <<~text
+    - list item 1
+    - list item 2
 
-        @input_text = <<~text
-        1. ordered item 1
-        2. ordered item 2
+    1. ordered item 1
+    2. ordered item 2
+    text
 
-        - list item 1
-        - list item 2
-        text
+    @output_text = <<~text
+    <ul>
+      <li>list item 1</li>
+      <li>list item 2</li>
+    </ul>
 
-        @output_text = <<~text
-        <ol>
-          <li>ordered item 1</li>
-          <li>ordered item 2</li>
-        </ol>
+    <ol>
+      <li>ordered item 1</li>
+      <li>ordered item 2</li>
+    </ol>
+    text
 
-        <ul>
-          <li>list item 1</li>
-          <li>list item 2</li>
-        </ul>
-        text
+    assert_equal @output_text, @parser.parse(@input_text)
+  end
 
-        assert_equal @output_text, @parser.parse(@input_text)
-    end
+  def test_inverted_lists
+    # Test that we can parse ol and ul
 
-    def test_guilhaume_markdown_text
-        # Test that we can parse the markdown text Guillaume wrote
+    @input_text = <<~text
+    1. ordered item 1
+    2. ordered item 2
 
-        @input_text = <<~text
-        # Title *italic* **bold**
+    - list item 1
+    - list item 2
+    text
 
-        ## Subtitle
+    @output_text = <<~text
+    <ol>
+      <li>ordered item 1</li>
+      <li>ordered item 2</li>
+    </ol>
 
-        Paragraph1
+    <ul>
+      <li>list item 1</li>
+      <li>list item 2</li>
+    </ul>
+    text
 
-        Paragraph2
+    assert_equal @output_text, @parser.parse(@input_text)
+  end
 
-        - list item 1
-        - list item 2
+  def test_guillaume_markdown_text
+    # Test that we can parse the markdown text Guillaume wrote
 
-        1. ordered item 1
-        2. ordered item 2
-        text
+    @input_text = <<~text
+    # Title *italic* **bold**
 
-        @output_text = <<~text
-        <h1>Title <em>italic</em> <strong>bold</strong></h1>
+    ## Subtitle
 
-        <h2>Subtitle</h2>
+    Paragraph1
 
-        <p>Paragraph1</p>
+    Paragraph2
 
-        <p>Paragraph2</p>
+    - list item 1
+    - list item 2
 
-        <ul>
-          <li>list item 1</li>
-          <li>list item 2</li>
-        </ul>
+    1. ordered item 1
+    2. ordered item 2
+    text
 
-        <ol>
-          <li>ordered item 1</li>
-          <li>ordered item 2</li>
-        </ol>
-        text
+    @output_text = <<~text
+    <h1>Title <em>italic</em> <strong>bold</strong></h1>
 
-        assert_equal @output_text, @parser.parse(@input_text)
-    end
+    <h2>Subtitle</h2>
 
-    def test_improved_guilhaume_markdown_text
-        # Test that we can parse an improved version of
-        #the markdown text Guillaume wrote
-        
-        @input_text = <<~text
-        # Title *italic* **bold**
+    <p>Paragraph1</p>
 
-        ## Subtitle
+    <p>Paragraph2</p>
 
-        Paragraph1
+    <ul>
+      <li>list item 1</li>
+      <li>list item 2</li>
+    </ul>
 
-        Paragraph2
+    <ol>
+      <li>ordered item 1</li>
+      <li>ordered item 2</li>
+    </ol>
+    text
 
-        - list item 1
-        - list item 2
+    assert_equal @output_text, @parser.parse(@input_text)
+  end
 
-        1. ordered item 1
-        2. ordered item 2
+  def test_improved_guillaume_markdown_text
+    # Test that we can parse an improved version of
+    #the markdown text Guillaume wrote
 
-        ## Subtitle
+    @input_text = <<~text
+    # Title *italic* **bold**
 
-        Paragraph1
+    ## Subtitle
 
-        Paragraph2
+    Paragraph1
 
-        # Title *italic* **bold**
+    Paragraph2
 
-        1. ordered item 1
-        2. ordered item 2
-        3. ordered item 3
-        4. ordered item 4
+    - list item 1
+    - list item 2
 
-        - list item 1
-        - list item 2
-        - list item 3
-        - list item 4
-        text
+    1. ordered item 1
+    2. ordered item 2
 
-        @output_text = <<~text
-        <h1>Title <em>italic</em> <strong>bold</strong></h1>
+    ## Subtitle
 
-        <h2>Subtitle</h2>
+    Paragraph1
 
-        <p>Paragraph1</p>
+    Paragraph2
 
-        <p>Paragraph2</p>
+    # Title *italic* **bold**
 
-        <ul>
-          <li>list item 1</li>
-          <li>list item 2</li>
-        </ul>
+    1. ordered item 1
+    2. ordered item 2
+    3. ordered item 3
+    4. ordered item 4
 
-        <ol>
-          <li>ordered item 1</li>
-          <li>ordered item 2</li>
-        </ol>
+    - list item 1
+    - list item 2
+    - list item 3
+    - list item 4
+    text
 
-        <h2>Subtitle</h2>
+    @output_text = <<~text
+    <h1>Title <em>italic</em> <strong>bold</strong></h1>
 
-        <p>Paragraph1</p>
+    <h2>Subtitle</h2>
 
-        <p>Paragraph2</p>
+    <p>Paragraph1</p>
 
-        <h1>Title <em>italic</em> <strong>bold</strong></h1>
+    <p>Paragraph2</p>
 
-        <ol>
-          <li>ordered item 1</li>
-          <li>ordered item 2</li>
-          <li>ordered item 3</li>
-          <li>ordered item 4</li>
-        </ol>
+    <ul>
+      <li>list item 1</li>
+      <li>list item 2</li>
+    </ul>
 
-        <ul>
-          <li>list item 1</li>
-          <li>list item 2</li>
-          <li>list item 3</li>
-          <li>list item 4</li>
-        </ul>
-        text
+    <ol>
+      <li>ordered item 1</li>
+      <li>ordered item 2</li>
+    </ol>
 
-        assert_equal @output_text, @parser.parse(@input_text)
-    end
+    <h2>Subtitle</h2>
+
+    <p>Paragraph1</p>
+
+    <p>Paragraph2</p>
+
+    <h1>Title <em>italic</em> <strong>bold</strong></h1>
+
+    <ol>
+      <li>ordered item 1</li>
+      <li>ordered item 2</li>
+      <li>ordered item 3</li>
+      <li>ordered item 4</li>
+    </ol>
+
+    <ul>
+      <li>list item 1</li>
+      <li>list item 2</li>
+      <li>list item 3</li>
+      <li>list item 4</li>
+    </ul>
+    text
+
+    assert_equal @output_text, @parser.parse(@input_text)
+  end
 end
