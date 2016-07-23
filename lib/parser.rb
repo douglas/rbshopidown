@@ -118,11 +118,7 @@ class Parser
 
     # If we just had lists on our text we need to
     # process them after the loop
-    if not @unordered_items.empty?
-      html.push(parse_list_items())
-    elsif not @ordered_items.empty?
-      html.push(parse_list_items())
-    end
+    html.push(parse_list_items())
 
     # To finish, lets parse the styles =)
     parse_styles(html.join)
